@@ -1,0 +1,154 @@
+<template>
+  <div class={formElementClass}>
+    <label class={labelClass} for="combobox-input">
+      <abbr lwc:if={required} class="slds-required" title={text.required}
+        >*</abbr
+      >{label}
+    </label>
+    <div lwc:if={fieldLevelHelp} class="slds-form-element__icon">
+      <lightning-helptext content={fieldLevelHelp}></lightning-helptext>
+    </div>
+    <div class="slds-form-element__control">
+      <div
+        class="slds-combobox_container"
+        lwc:ref="container"
+        onfocusout={handleFocusOut}
+      >
+        <div class={comboboxClass}>
+          <div
+            class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
+            role="none"
+          >
+            <input
+              id="combobox-input"
+              lwc:ref="input"
+              type="text"
+              class="slds-input slds-combobox__input"
+              role="combobox"
+              autocomplete="off"
+              aria-autocomplete="list"
+              aria-haspopup="listbox"
+              aria-controls="combobox-listbox"
+              aria-expanded={ariaExpanded}
+              aria-activedescendant={activeDescendant}
+              aria-describedby={describedBy}
+              aria-required={ariaRequired}
+              placeholder={inputPlaceholder}
+              value={inputValue}
+              readonly={isInputReadOnly}
+              disabled={disabled}
+              onclick={handleInputClick}
+              onkeydown={handleInputKeyDown}
+              oninput={handleSearchInput}
+            />
+            <lightning-icon
+              class="slds-input__icon slds-input__icon_right"
+              icon-name="utility:down"
+              size="x-small"
+            ></lightning-icon>
+          </div>
+          <div
+            class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid"
+            onmousedown={handleDropdownMouseDown}
+          >
+            <div
+              lwc:if={showSelectAll}
+              class="slds-p-horizontal_small slds-p-bottom_x-small"
+              data-id="bulk-actions"
+            >
+              <lightning-button
+                variant="base"
+                label={text.selectAll}
+                data-id="select-all"
+                onclick={handleSelectAll}
+              ></lightning-button>
+              <lightning-button
+                variant="base"
+                class="slds-m-left_small"
+                label={text.clearAll}
+                data-id="clear-all"
+                onclick={handleClearAll}
+              ></lightning-button>
+            </div>
+            <div
+              id="combobox-listbox"
+              role="listbox"
+              aria-multiselectable="true"
+              aria-label={label}
+            >
+              <ul
+                class="slds-listbox slds-listbox_vertical"
+                role="presentation"
+              >
+                <template for:each={optionViews} for:item="option">
+                  <li
+                    key={option.key}
+                    role="presentation"
+                    class="slds-listbox__item"
+                  >
+                    <div
+                      id={option.id}
+                      class={option.className}
+                      role="option"
+                      aria-selected={option.ariaSelected}
+                      aria-disabled={option.ariaDisabled}
+                      data-value={option.value}
+                      onclick={handleOptionClick}
+                    >
+                      <span
+                        class="slds-media__figure slds-listbox__option-icon"
+                      >
+                        <lightning-icon
+                          lwc:if={option.selected}
+                          icon-name="utility:check"
+                          size="x-small"
+                        ></lightning-icon>
+                      </span>
+                      <span class="slds-media__body">
+                        <span class="slds-truncate" title={option.label}
+                          >{option.label}</span
+                        >
+                      </span>
+                    </div>
+                  </li>
+                </template>
+                <li
+                  lwc:if={isEmptyListVisible}
+                  role="presentation"
+                  class="slds-listbox__item"
+                >
+                  <div
+                    class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                    role="option"
+                    aria-selected="false"
+                    aria-disabled="true"
+                    data-id="empty-list"
+                  >
+                    <span class="slds-media__body slds-text-color_weak"
+                      >{emptyListText}</span
+                    >
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <c-multi-select-combobox-selection
+        lwc:if={showPills}
+        label={text.selectedOptions}
+        selected-options={selectedOptions}
+        disabled={disabled}
+        onremove={handlePillRemove}
+      ></c-multi-select-combobox-selection>
+    </div>
+    <div
+      lwc:if={hasError}
+      id="error-message"
+      class="slds-form-element__help"
+      aria-live="assertive"
+    >
+      {errorMessage}
+    </div>
+  </div>
+</template>

@@ -1,0 +1,29 @@
+<template>
+  <div class="slds-p-top_xx-small">
+    <lightning-pill-container
+      lwc:if={isRemovable}
+      label={label}
+      items={pillItems}
+      onitemremove={handleItemRemove}
+    ></lightning-pill-container>
+    <ul
+      lwc:else
+      class="slds-listbox slds-listbox_horizontal"
+      aria-label={label}
+      data-id="read-only-pills"
+    >
+      <template for:each={selectedOptions} for:item="option">
+        <li key={option.value} class="slds-listbox__item">
+          <!-- No remove button here, so the label gets the right-hand spacing the button would give. -->
+          <span class="slds-pill">
+            <span
+              class="slds-pill__label slds-p-right_x-small"
+              title={option.label}
+              >{option.label}</span
+            >
+          </span>
+        </li>
+      </template>
+    </ul>
+  </div>
+</template>

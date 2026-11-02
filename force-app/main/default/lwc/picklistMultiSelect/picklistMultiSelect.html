@@ -1,0 +1,33 @@
+<template>
+  <div class="slds-is-relative">
+    <lightning-spinner
+      lwc:if={isLoading}
+      alternative-text={text.loading}
+      size="small"
+    ></lightning-spinner>
+    <c-multi-select-combobox
+      lwc:ref="combobox"
+      label={label}
+      options={comboboxOptions}
+      value={values}
+      placeholder={placeholder}
+      selection-display={selectionDisplay}
+      variant={variant}
+      field-level-help={fieldLevelHelp}
+      disabled={disabled}
+      required={required}
+      max-selections={maxSelections}
+      show-select-all={showSelectAll}
+      message-when-value-missing={messageWhenValueMissing}
+      message-when-range-overflow={messageWhenRangeOverflow}
+      onchange={handleChange}
+    ></c-multi-select-combobox>
+    <div
+      lwc:if={hasLoadError}
+      class="slds-form-element__help slds-text-color_error"
+      role="alert"
+    >
+      {text.loadError}
+    </div>
+  </div>
+</template>

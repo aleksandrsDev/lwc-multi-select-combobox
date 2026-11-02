@@ -1,0 +1,100 @@
+<template>
+  <lightning-card
+    title="Multi-select combobox"
+    icon-name="standard:multi_picklist"
+  >
+    <lightning-layout multiple-rows>
+      <lightning-layout-item
+        padding="around-small"
+        size="12"
+        medium-device-size="6"
+      >
+        <c-multi-select-combobox
+          label="Pills (default), with help text"
+          options={options}
+          value={values.pills}
+          field-level-help="Selected options appear as removable pills."
+          data-name="pills"
+          onchange={handleChange}
+        ></c-multi-select-combobox>
+      </lightning-layout-item>
+
+      <lightning-layout-item
+        padding="around-small"
+        size="12"
+        medium-device-size="6"
+      >
+        <c-multi-select-combobox
+          label="Text display"
+          options={options}
+          value={values.textFew}
+          selection-display="text"
+          data-name="textFew"
+          onchange={handleChange}
+        ></c-multi-select-combobox>
+      </lightning-layout-item>
+
+      <lightning-layout-item
+        padding="around-small"
+        size="12"
+        medium-device-size="6"
+      >
+        <c-multi-select-combobox
+          label="Text display, many selected"
+          options={options}
+          value={values.textMany}
+          selection-display="text"
+          data-name="textMany"
+          onchange={handleChange}
+        ></c-multi-select-combobox>
+      </lightning-layout-item>
+
+      <lightning-layout-item
+        padding="around-small"
+        size="12"
+        medium-device-size="6"
+      >
+        <c-multi-select-combobox
+          lwc:ref="requiredCombobox"
+          label="Required"
+          options={options}
+          value={values.required}
+          placeholder="Pick at least one industry"
+          required
+          data-name="required"
+          onchange={handleChange}
+        ></c-multi-select-combobox>
+      </lightning-layout-item>
+
+      <lightning-layout-item
+        padding="around-small"
+        size="12"
+        medium-device-size="6"
+      >
+        <c-multi-select-combobox
+          label="Disabled"
+          options={options}
+          value={values.disabled}
+          disabled
+          data-name="disabled"
+          onchange={handleChange}
+        ></c-multi-select-combobox>
+      </lightning-layout-item>
+      <lightning-layout-item
+        padding="around-small"
+        size="12"
+        medium-device-size="6"
+      >
+        <c-multi-select-combobox
+          label="Limit of 2 reached, with select all"
+          options={options}
+          value={values.limit}
+          max-selections="2"
+          show-select-all
+          data-name="limit"
+          onchange={handleChange}
+        ></c-multi-select-combobox>
+      </lightning-layout-item>
+    </lightning-layout>
+  </lightning-card>
+</template>
