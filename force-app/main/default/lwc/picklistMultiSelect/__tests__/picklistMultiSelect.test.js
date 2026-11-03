@@ -269,6 +269,67 @@ describe("c-picklist-multi-select", () => {
       element.blur();
       expect(getCombobox(element).shadowRoot.activeElement).toBeNull();
     });
+
+    describe("before the first render", () => {
+      const createUnrendered = (props = {}) => {
+        const element = createElement("c-picklist-multi-select", {
+          is: PicklistMultiSelect
+        });
+        Object.assign(element, props);
+        return element;
+      };
+
+      it("treats the field as valid and ignores focus and blur", () => {
+        const element = createUnrendered({ required: true });
+
+        expect(element.validity).toBeUndefined();
+        expect(element.checkValidity()).toBe(true);
+        expect(element.reportValidity()).toBe(true);
+        expect(() => {
+          element.focus();
+          element.blur();
+        }).not.toThrow();
+      });
+
+      it("clearSelection clears the value and fires change", () => {
+        const element = createUnrendered({ value: "Banking;Energy" });
+        const changeHandler = listenForChange(element);
+
+        element.clearSelection();
+
+        expect(element.value).toBe("");
+        expect(changeHandler).toHaveBeenCalledTimes(1);
+        expect(changeHandler.mock.calls[0][0].detail).toEqual({
+          value: "",
+          values: [],
+          selectedOptions: []
+        });
+      });
+
+      it("clearSelection does nothing when nothing is selected", () => {
+        const element = createUnrendered();
+        const changeHandler = listenForChange(element);
+
+        element.clearSelection();
+
+        expect(changeHandler).not.toHaveBeenCalled();
+      });
+
+      it("applies a custom validity message once rendered", async () => {
+        const element = createUnrendered({
+          label: "Industry",
+          objectApiName: "Account",
+          fieldApiName: "Industry"
+        });
+        element.setCustomValidity("Nope");
+
+        document.body.appendChild(element);
+        await flush();
+
+        expect(element.validity.customError).toBe(true);
+        expect(getCombobox(element).validity.customError).toBe(true);
+      });
+    });
   });
 
   it("is accessible once loaded", async () => {

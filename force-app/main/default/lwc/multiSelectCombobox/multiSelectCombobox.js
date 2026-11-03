@@ -157,14 +157,15 @@ export default class MultiSelectCombobox extends LightningElement {
     this.customMessage = message ?? "";
   }
 
+  // `refs` is undefined until the first render; there's nothing to focus before that.
   @api
   focus() {
-    this.refs.input.focus();
+    this.refs?.input.focus();
   }
 
   @api
   blur() {
-    this.refs.input.blur();
+    this.refs?.input.blur();
   }
 
   renderedCallback() {
@@ -324,10 +325,20 @@ export default class MultiSelectCombobox extends LightningElement {
     event.preventDefault();
   }
 
+  // A disabled option is skipped, like with the keyboard: it's neither highlighted nor toggled.
   handleOptionClick(event) {
-    const value = event.currentTarget.dataset.value;
-    this.activateOption(value);
-    this.commitSelection(toggleValue(this._value, value, this._maxSelections));
+    const views = this.optionViews;
+    const index = views.findIndex(
+      (view) => view.value === event.currentTarget.dataset.value
+    );
+    const clickedView = views[index];
+    if (!clickedView || clickedView.disabled) {
+      return;
+    }
+    this.activeIndex = index;
+    this.commitSelection(
+      toggleValue(this._value, clickedView.value, this._maxSelections)
+    );
   }
 
   handleSelectAll() {
@@ -386,12 +397,6 @@ export default class MultiSelectCombobox extends LightningElement {
   resetActiveOption() {
     this.activeIndex = firstEnabledIndex(this.optionViews);
     this._shouldScrollToActiveOption = true;
-  }
-
-  activateOption(value) {
-    this.activeIndex = this.optionViews.findIndex(
-      (view) => view.value === value
-    );
   }
 
   moveActiveOption(intent) {

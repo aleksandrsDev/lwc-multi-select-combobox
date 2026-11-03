@@ -721,6 +721,16 @@ describe("c-multi-select-combobox", () => {
       expect(element.value).toEqual(["a"]);
     });
 
+    it("doesn't highlight a disabled option when it's clicked", async () => {
+      const element = createCombobox({ maxSelections: 1, value: ["a"] });
+      await openWithKeyboard(element);
+      expect(activeOption(element).dataset.value).toBe("a");
+
+      await clickOption(element, "b");
+
+      expect(activeOption(element).dataset.value).toBe("a");
+    });
+
     it("re-enables options after a deselection", async () => {
       const element = createCombobox({ maxSelections: 1, value: ["a"] });
       await openDropdown(element);
@@ -971,6 +981,17 @@ describe("c-multi-select-combobox", () => {
 
       element.blur();
       expect(element.shadowRoot.activeElement).toBeNull();
+    });
+
+    it("focus() and blur() do nothing before the first render", () => {
+      const element = createElement("c-multi-select-combobox", {
+        is: MultiSelectCombobox
+      });
+
+      expect(() => {
+        element.focus();
+        element.blur();
+      }).not.toThrow();
     });
   });
 

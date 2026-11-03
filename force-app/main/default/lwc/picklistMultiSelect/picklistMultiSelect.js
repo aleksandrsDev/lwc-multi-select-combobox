@@ -44,6 +44,7 @@ export default class PicklistMultiSelect extends LightningElement {
   options;
   defaultRecordTypeId;
   loadError;
+  pendingCustomValidity;
 
   /** Selected values as a multi-select picklist string, e.g. `'Banking;Energy'`. */
   @api
@@ -54,39 +55,67 @@ export default class PicklistMultiSelect extends LightningElement {
     this.values = parsePicklistValue(value);
   }
 
+  // The methods below delegate to the combobox, which only exists once the wrapper has rendered.
+  // Earlier calls are safe: there's no field to validate or focus yet, and state changes are kept.
+
+  /** The combobox's validity; undefined before the first render. */
   @api
   get validity() {
-    return this.refs.combobox.validity;
+    return this.combobox?.validity;
   }
 
   @api
   clearSelection() {
-    this.refs.combobox.clearSelection();
+    if (this.combobox) {
+      this.combobox.clearSelection();
+    } else if (this.values.length > 0) {
+      this.values = [];
+      this.dispatchChange([]);
+    }
   }
 
+  /** @returns {boolean} the combobox's validity; true before the first render. */
   @api
   checkValidity() {
-    return this.refs.combobox.checkValidity();
+    return this.combobox?.checkValidity() ?? true;
   }
 
+  /** @returns {boolean} the combobox's validity; true before the first render. */
   @api
   reportValidity() {
-    return this.refs.combobox.reportValidity();
+    return this.combobox?.reportValidity() ?? true;
   }
 
+  /** Before the first render, the message is kept and applied once the combobox exists. */
   @api
   setCustomValidity(message) {
-    this.refs.combobox.setCustomValidity(message);
+    if (this.combobox) {
+      this.combobox.setCustomValidity(message);
+    } else {
+      this.pendingCustomValidity = message;
+    }
   }
 
   @api
   focus() {
-    this.refs.combobox.focus();
+    this.combobox?.focus();
   }
 
   @api
   blur() {
-    this.refs.combobox.blur();
+    this.combobox?.blur();
+  }
+
+  renderedCallback() {
+    if (this.pendingCustomValidity !== undefined) {
+      this.combobox.setCustomValidity(this.pendingCustomValidity);
+      this.pendingCustomValidity = undefined;
+    }
+  }
+
+  // `refs` is undefined until the first render.
+  get combobox() {
+    return this.refs?.combobox;
   }
 
   // The object info is only needed when no record type is given.
@@ -142,12 +171,16 @@ export default class PicklistMultiSelect extends LightningElement {
 
   handleChange(event) {
     this.values = event.detail.value;
+    this.dispatchChange(event.detail.selectedOptions);
+  }
+
+  dispatchChange(selectedOptions) {
     this.dispatchEvent(
       new CustomEvent("change", {
         detail: {
           value: formatPicklistValue(this.values),
           values: [...this.values],
-          selectedOptions: event.detail.selectedOptions
+          selectedOptions
         }
       })
     );
